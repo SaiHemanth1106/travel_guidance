@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoyageGuide | Your Global Travel Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7fbb06;
+            --secondary: #00b4d8;
+            --accent: #0c97af;
+            --light: #caf0f8;
+            --text-primary: #ffffff;
+            --text-secondary: #caf0f8;
+            --text-accent: #336cf2;
+            --text-third: blue;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--secondary) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text-primary);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, -15px); }
+            100% { transform: translate(0, -0px); }
+        }
+        
+        .parallax {
+            transform-style: preserve-3d;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(0, 180, 216, 0.5);
+        }
+        
+        .search-glow {
+            box-shadow: 0 0 30px rgba(0, 180, 216, 0.7);
+        }
+        
+        .destination-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .destination-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .plane-animation {
+            animation: fly 20s linear infinite;
+        }
+        
+        @keyframes fly {
+            0% { transform: translateX(-100px) translateY(50px); }
+            100% { transform: translateX(calc(100vw + 100px)) translateY(-100px); }
+        }
+        
+        .cloud {
+            animation: cloudMove 30s linear infinite;
+        }
+        
+        @keyframes cloudMove {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(calc(100vw + 100px)); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px rgba(0, 180, 216, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 180, 216, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(0, 180, 216, 0.5); }
+        }
+        
+        .map-dot {
+            animation: mapPulse 3s infinite;
+        }
+        
+        @keyframes mapPulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+        
+        /* Text color classes using CSS variables */
+        .text-primary { color: var(--text-primary); }
+        .text-secondary { color: var(--text-secondary); }
+        .text-accent { color: var(--text-accent); }
+        
+        /* Button styling using CSS variables */
+        .btn-primary {
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            color: var(--text-primary);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden">
+    <!-- Background Elements -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="plane-animation absolute text-4xl text-primary opacity-30">
+            <i class="fas fa-plane"></i>
+        </div>
+        <div class="cloud absolute top-20 text-6xl text-primary opacity-20">
+            <i class="fas fa-cloud"></i>
+        </div>
+        <div class="cloud absolute top-40 right-10 text-5xl text-primary opacity-25" style="animation-delay: -10s;">
+            <i class="fas fa-cloud"></i>
+        </div>
+        <div class="cloud absolute top-60 left-20 text-7xl text-primary opacity-15" style="animation-delay: -20s;">
+            <i class="fas fa-cloud"></i>
+        </div>
+        
+        <!-- Animated World Map -->
+        <div class="absolute inset-0 flex items-center justify-center opacity-10">
+            <svg width="800" height="400" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M400,200 C500,100 600,150 700,200 C600,250 500,300 400,200 Z" stroke="white" stroke-width="2" fill="none"/>
+                <circle cx="300" cy="150" r="5" fill="white" class="map-dot" style="animation-delay: 0s;"></circle>
+                <circle cx="500" cy="180" r="5" fill="white" class="map-dot" style="animation-delay: 1s;"></circle>
+                <circle cx="350" cy="250" r="5" fill="white" class="map-dot" style="animation-delay: 2s;"></circle>
+                <circle cx="450" cy="120" r="5" fill="white" class="map-dot" style="animation-delay: 0.5s;"></circle>
+                <circle cx="550" cy="220" r="5" fill="white" class="map-dot" style="animation-delay: 1.5s;"></circle>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 py-6 px-4 md:px-8">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-3">
+                    <i class="fas fa-globe-americas text-primary text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-primary">Travel<span class="text-accent">Guide</span></h1>
+            </div>
+            
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-primary hover:text-accent transition-colors">Destinations</a>
+                <a href="#" class="text-primary hover:text-accent transition-colors">Travel Tips</a>
+                <a href="#" class="text-primary hover:text-accent transition-colors">About</a>
+                <a href="#" class="text-primary hover:text-accent transition-colors">Contact</a>
+            </nav>
+            
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="text-primary hover:text-accent transition-colors">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="md:hidden text-primary">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative z-10 py-12 md:py-20 px-4 md:px-8">
+        <div class="container mx-auto text-center max-w-3xl">
+            <h1 class="text-4xl md:text-6xl font-bold text-primary mb-6">Discover Your Next <span class="text-accent">Adventure</span></h1>
+            <p class="text-xl text-primary mb-10 max-w-2xl mx-auto">Explore breathtaking destinations with personalized travel guides, insider tips, and curated experiences.</p>
+            
+            <!-- Search Bar -->
+            <div class="glass-card rounded-2xl p-2 mb-16 max-w-2xl mx-auto search-glow">
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="flex-1 w-full mb-4 md:mb-0 md:mr-4">
+                        <div class="relative">
+                            <input type="text" id="destination-input" placeholder="Where do you want to go?" class="w-full py-4 px-6 rounded-xl bg-white/70 backdrop-blur-sm border-0 focus:ring-2 focus:ring-accent focus:outline-none text-gray-800 placeholder-gray-500">
+                            <i class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                        </div>
+                    </div>
+                    <button id="search-btn" class="btn-primary font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 w-full md:w-auto pulse-glow">
+                        Get Travel Guide
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Trending Destinations -->
+            <div class="mb-16">
+                <h2 class="text-2xl font-bold text-primary mb-8">Trending Destinations</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="destination-card glass-card rounded-xl overflow-hidden cursor-pointer">
+                        <div class="h-32 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1539037116277-4db20889f2d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');"></div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-primary">Bali</h3>
+                            <p class="text-secondary text-sm">Indonesia</p>
+                        </div>
+                    </div>
+                    <div class="destination-card glass-card rounded-xl overflow-hidden cursor-pointer">
+                        <div class="h-32 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1549144511-f099e773c147?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80');"></div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-primary">Paris</h3>
+                            <p class="text-secondary text-sm">France</p>
+                        </div>
+                    </div>
+                    <div class="destination-card glass-card rounded-xl overflow-hidden cursor-pointer">
+                        <div class="h-32 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1192&q=80');"></div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-primary">Tokyo</h3>
+                            <p class="text-secondary text-sm">Japan</p>
+                        </div>
+                    </div>
+                    <div class="destination-card glass-card rounded-xl overflow-hidden cursor-pointer">
+                        <div class="h-32 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80');"></div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-primary">Santorini</h3>
+                            <p class="text-secondary text-sm">Greece</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results-section" class="relative z-10 py-12 px-4 md:px-8 hidden">
+        <div class="container mx-auto max-w-4xl">
+            <!-- Travel Guide Card -->
+            <div id="travel-guide" class="glass-card rounded-2xl overflow-hidden mb-12 fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                    <div class="h-64 md:h-full parallax" id="destination-image">
+                        <!-- Destination image will be loaded here -->
+                    </div>
+                    <div class="p-6 md:p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h2 id="destination-name" class="text-2xl md:text-3xl font-bold text-primary">Destination Name</h2>
+                            <button id="save-btn" class="text-primary hover:text-accent transition-colors">
+                                <i class="far fa-bookmark text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-accent mb-2">Best Time to Visit</h3>
+                            <p id="best-time" class="text-primary">Loading...</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-accent mb-2">Top Attractions</h3>
+                            <ul id="attractions" class="text-primary list-disc pl-5">
+                                <!-- Attractions will be loaded here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6 md:p-8 border-t border-primary/20">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-accent mb-2">Hotels & Restaurants</h3>
+                            <div id="hotels-restaurants" class="text-primary">
+                                <!-- Hotels and restaurants will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-accent mb-2">Budget Tips</h3>
+                            <div id="budget-tips" class="text-primary">
+                                <!-- Budget tips will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold text-accent mb-2">Transportation</h3>
+                        <div id="transportation" class="text-primary">
+                            <!-- Transportation info will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold text-accent mb-2">Traveler Tips</h3>
+                        <div id="traveler-tips" class="text-primary">
+                            <!-- Traveler tips will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Recommendations -->
+            <div id="ai-recommendations" class="mb-12 fade-in">
+                <h2 class="text-2xl font-bold text-primary mb-6">You May Also Like</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- AI recommendations will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 py-8 px-4 md:px-8 border-t border-primary/20 mt-12">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center mr-2">
+                            <i class="fas fa-globe-americas text-primary"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-primary">Travel<span class="text-accent">Guide</span></h2>
+                    </div>
+                    <p class="text-primary/70 mt-2">Your trusted travel companion since 2023</p>
+                </div>
+                
+                <div class="flex space-x-6 text-primary text-2xl">
+                    <i class="fab fa-twitter hover:text-accent transition-colors cursor-pointer"></i>
+                    <i class="fab fa-instagram hover:text-accent transition-colors cursor-pointer"></i>
+                    <i class="fab fa-facebook hover:text-accent transition-colors cursor-pointer"></i>
+                    <i class="fab fa-pinterest hover:text-accent transition-colors cursor-pointer"></i>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-primary/20 text-center text-primary/70">
+                <p>&copy; 2023 TravelGuide. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+  /* ========== DATA ========== */
+  const travelData = {
+    "varanasi": {
+      name: "Varanasi (Kashi), India",
+      image: "varanasi.jpg",
+      bestTime: "October to March",
+      attractions: ["Kashi Vishwanath Temple", "Dashashwamedh Ghat", "Sarnath", "Ganga Aarti"],
+      hotels: ["Taj Ganges", "BrijRama Palace", "Hotel Surya"],
+      restaurants: ["Kashi Chat Bhandar", "Brown Bread Bakery", "Pizzeria Vaatika Cafe"],
+      budgetTips: "Use shared autos or rickshaws, stay in ghatside lodges, try local thalis.",
+      transportation: "Cycle rickshaws, tuk-tuks, boats on Ganga.",
+      travelerTips: "Attend evening Aarti, respect temple customs, dress modestly."
+    },
+    "agra": {
+      name: "Agra (Taj Mahal), India",
+      image: "agra.jpg",
+      bestTime: "November to February",
+      attractions: ["Taj Mahal", "Agra Fort", "Mehtab Bagh", "Fatehpur Sikri"],
+      hotels: ["ITC Mughal", "The Oberoi Amarvilas", "Hotel Clarks Shiraz"],
+      restaurants: ["Pinch of Spice", "Peshawri", "Dasaprakash"],
+      budgetTips: "Buy sunrise tickets online, explore by tuk-tuk, eat at local dhabas.",
+      transportation: "Taxis, autos, and guided tours available.",
+      travelerTips: "Visit early morning to avoid crowds, carry water and sunscreen."
+    },
+    "goa": {
+      name: "Goa, India",
+      image: "goa.jpg",
+      bestTime: "November to February",
+      attractions: ["Calangute Beach", "Fort Aguada", "Dudhsagar Falls", "Basilica of Bom Jesus"],
+      hotels: ["Taj Fort Aguada", "The Leela", "Alila Diwa"],
+      restaurants: ["Fisherman's Wharf", "Martin's Corner", "Brittos"],
+      budgetTips: "Stay in guesthouses, rent scooters, enjoy local seafood at shacks.",
+      transportation: "Scooters, buses, taxis, and private drivers.",
+      travelerTips: "Respect beach etiquette, carry cash for local shops."
+    },
+    "jaipur": {
+      name: "Jaipur (Hawa Mahal), India",
+      image: "jaipur.jpg",
+      bestTime: "October to March",
+      attractions: ["Hawa Mahal", "Amber Fort", "City Palace", "Jantar Mantar"],
+      hotels: ["Rambagh Palace", "Trident Jaipur", "Alsisar Haveli"],
+      restaurants: ["LMB", "Peacock Rooftop", "Chokhi Dhani"],
+      budgetTips: "Use Jaipur Metro and e-rickshaws, shop in Johari Bazaar.",
+      transportation: "Autos, metro, and private cabs.",
+      travelerTips: "Carry scarves for dust, try local handicrafts."
+    },
+    "pondicherry": {
+      name: "Pondicherry, India",
+      image: "pondicherry.jpg",
+      bestTime: "October to March",
+      attractions: ["Auroville", "Promenade Beach", "French Quarter", "Paradise Beach"],
+      hotels: ["La Villa", "The Promenade", "Le Dupleix"],
+      restaurants: ["Café des Arts", "Le Café", "Baker Street"],
+      budgetTips: "Rent bicycles, stay in homestays, eat at local cafés.",
+      transportation: "Scooters, bicycles, and autos.",
+      travelerTips: "Respect Auroville guidelines, carry sunscreen."
+    },
+    "gateway": {
+      name: "Gateway of India, Mumbai",
+      image: "gate way.jpg",
+      bestTime: "November to February",
+      attractions: ["Gateway of India", "Marine Drive", "Elephanta Caves", "Colaba Causeway"],
+      hotels: ["The Taj Mahal Palace", "Trident Nariman Point", "Hotel Marine Plaza"],
+      restaurants: ["Leopold Café", "Bademiya", "Cafe Mondegar"],
+      budgetTips: "Use Mumbai local trains, try street food at Girgaum Chowpatty.",
+      transportation: "Local trains, cabs, BEST buses.",
+      travelerTips: "Avoid rush hour, beware of touts, enjoy sunset at Marine Drive."
+    },
+    "ooty": {
+      name: "Ooty, Tamil Nadu",
+      image: "ooty.jpg",
+      bestTime: "April to June and September to November",
+      attractions: ["Ooty Lake", "Botanical Gardens", "Doddabetta Peak", "Tea Museum"],
+      hotels: ["Savoy Ooty", "Sterling Fern Hill", "Accord Highland"],
+      restaurants: ["Earl's Secret", "Nahar's Sidewalk Café", "Hyderabad Biryani House"],
+      budgetTips: "Use shared jeeps, explore markets for chocolates and tea.",
+      transportation: "Toy train, taxis, buses.",
+      travelerTips: "Carry warm clothes, book toy train early."
+    },
+    "mysore": {
+      name: "Mysore Palace, Karnataka",
+      image: "mysore palace.jpg",
+      bestTime: "October to March",
+      attractions: ["Mysore Palace", "Chamundi Hills", "Brindavan Gardens", "St. Philomena’s Church"],
+      hotels: ["Radisson Blu", "Lalitha Mahal Palace", "Hotel Sandesh The Prince"],
+      restaurants: ["RRR", "The Old House", "Depth N Green"],
+      budgetTips: "Use city buses, visit local silk shops.",
+      transportation: "Autos, buses, taxis.",
+      travelerTips: "Palace lights up Sunday evenings; carry water."
+    },
+    "ladakh": {
+      name: "Ladakh, India",
+      image: "ladakh.jpg",
+      bestTime: "May to September",
+      attractions: ["Pangong Lake", "Nubra Valley", "Magnetic Hill", "Leh Palace"],
+      hotels: ["The Grand Dragon", "Ladakh Sarai", "Hotel Stok Palace"],
+      restaurants: ["The Tibetan Kitchen", "Bon Appetit", "Gesmo Restaurant"],
+      budgetTips: "Book shared taxis, avoid plastic bottles, stay in homestays.",
+      transportation: "Bike rentals, taxis, local jeeps.",
+      travelerTips: "Carry Diamox, stay hydrated, avoid overexertion."
+    },
+    "udaipur": {
+      name: "Udaipur, Rajasthan",
+      image: "udaipur.jpg",
+      bestTime: "October to March",
+      attractions: ["City Palace", "Lake Pichola", "Jag Mandir", "Saheliyon Ki Bari"],
+      hotels: ["The Oberoi Udaivilas", "Taj Lake Palace", "Trident Udaipur"],
+      restaurants: ["Ambrai", "Upre", "1559 AD"],
+      budgetTips: "Stay near Lake Pichola, use autos, eat at rooftop cafés.",
+      transportation: "Tuk-tuks, boats, taxis.",
+      travelerTips: "Carry light clothes, explore local bazaars for handicrafts."
+    },
+    "paris": {
+      name: "Paris, France",
+      image: "paris.jpg",
+      bestTime: "April to June and September to November",
+      attractions: ["Eiffel Tower", "Louvre Museum", "Notre-Dame", "Montmartre"],
+      hotels: ["Hotel Ritz", "Le Bristol", "Shangri-La Paris"],
+      restaurants: ["Le Jules Verne", "L’Ambroisie", "Septime"],
+      budgetTips: "Use metro passes, eat at bakeries, explore by foot.",
+      transportation: "Metro, buses, taxis.",
+      travelerTips: "Learn basic French, beware of pickpockets."
+    },
+    "shimla": {
+      name: "Shimla Mall Road, Himachal Pradesh",
+      image: "shiml mall.jpg",
+      bestTime: "March to June and October to February",
+      attractions: ["Mall Road", "Jakhoo Temple", "Kufri", "The Ridge"],
+      hotels: ["Wildflower Hall", "The Oberoi Cecil", "Clarkes Hotel"],
+      restaurants: ["Café Simla Times", "Wake and Bake", "Himachali Rasoi"],
+      budgetTips: "Walk around city center, avoid taxis for short distances.",
+      transportation: "Toy train, taxis, and local buses.",
+      travelerTips: "Carry woolens, avoid peak weekends."
+    },
+    "manali": {
+      name: "Manali, Himachal Pradesh",
+      image: "manali.jpg",
+      bestTime: "March to June and October to February",
+      attractions: ["Solang Valley", "Rohtang Pass", "Hadimba Temple", "Old Manali"],
+      hotels: ["Span Resort", "The Himalayan", "Johnson Lodge"],
+      restaurants: ["Café 1947", "Drifter’s Café", "Chopsticks"],
+      budgetTips: "Travel off-season, rent bikes, try homestays.",
+      transportation: "Buses, taxis, bikes.",
+      travelerTips: "Book Rohtang permits online, carry warm clothes."
+    },
+    "darjeeling": {
+      name: "Darjeeling, West Bengal",
+      image: "darjeeling.jpg",
+      bestTime: "March to May and October to November",
+      attractions: ["Tiger Hill", "Batasia Loop", "Darjeeling Himalayan Railway", "Peace Pagoda"],
+      hotels: ["Mayfair Darjeeling", "Windamere Hotel", "Cedar Inn"],
+      restaurants: ["Kunga Restaurant", "Glenary’s", "Sonam’s Kitchen"],
+      budgetTips: "Use shared jeeps, visit tea estates, eat momos at local stalls.",
+      transportation: "Toy train, jeeps, taxis.",
+      travelerTips: "Carry umbrella, book toy train early."
+    },
+    
+    "maldives": {
+      name: "Maldives",
+      image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1170&q=80",
+      bestTime: "November to April",
+      attractions: ["Malé", "Maafushi", "Ari Atoll", "Vaadhoo Island (Glowing Beach)"],
+      hotels: ["Soneva Fushi", "Gili Lankanfushi", "Sun Siyam Iru Fushi"],
+      restaurants: ["Ithaa Undersea Restaurant", "Muraka", "Seagull Café House"],
+      budgetTips: "Travel off-season, stay in local islands, use ferries.",
+      transportation: "Speedboats, seaplanes, ferries.",
+      travelerTips: "Carry reef-safe sunscreen, respect marine life."
+    }
+  };
+
+  /* ========== TRENDING DESTINATIONS ========== */
+  window.addEventListener('load', () => {
+    const container = document.querySelector(
+      "section .grid.grid-cols-2.md\\:grid-cols-4.gap-4"
+    );
+    const keys = Object.keys(travelData);
+    const randomKeys = shuffle(keys).slice(0, 8);
+    container.innerHTML = "";
+    randomKeys.forEach(k => {
+      const d = travelData[k];
+      const card = document.createElement('div');
+      card.className = 'destination-card glass-card rounded-xl overflow-hidden cursor-pointer';
+      card.innerHTML = `
+        <div class="h-32 bg-cover bg-center" style="background-image:url('${d.image}');"></div>
+        <div class="p-4">
+          <h3 class="font-semibold text-primary">${d.name.split(',')[0]}</h3>
+          <p class="text-accent text-sm">${(d.name.split(',')[1] || '').trim()}</p>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        destinationInput.value = k;
+        handleSearch();
+      });
+      container.appendChild(card);
+    });
+  });
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  /* ========== SEARCH FUNCTIONALITY ========== */
+  const destinationInput = document.getElementById('destination-input');
+  const searchBtn = document.getElementById('search-btn');
+  const resultsSection = document.getElementById('results-section');
+  const travelGuide = document.getElementById('travel-guide');
+  const destinationImage = document.getElementById('destination-image');
+  const destinationName = document.getElementById('destination-name');
+  const bestTime = document.getElementById('best-time');
+  const attractions = document.getElementById('attractions');
+  const hotelsRestaurants = document.getElementById('hotels-restaurants');
+  const budgetTips = document.getElementById('budget-tips');
+  const transportation = document.getElementById('transportation');
+  const travelerTips = document.getElementById('traveler-tips');
+
+  searchBtn.addEventListener('click', handleSearch);
+  destinationInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') handleSearch();
+  });
+
+  function handleSearch() {
+    const query = destinationInput.value.trim().toLowerCase();
+    if (!query) return;
+    showLoading();
+    setTimeout(() => {
+      const data = travelData[query];
+      if (data) displayTravelGuide(data);
+      else showNotFound();
+      resultsSection.classList.remove('hidden');
+      resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }, 400);
+  }
+
+  function displayTravelGuide(data) {
+    destinationImage.style.backgroundImage = `url('${data.image}')`;
+    destinationImage.style.backgroundSize = 'cover';
+    destinationImage.style.backgroundPosition = 'center';
+
+    destinationName.textContent = data.name;
+    destinationName.className = "text-primary font-bold text-2xl md:text-3xl";
+
+    bestTime.textContent = data.bestTime;
+    bestTime.className = "text-accent";
+
+    attractions.innerHTML = '';
+    data.attractions.forEach(a => {
+      const li = document.createElement('li');
+      li.textContent = a;
+      li.className = "text-light";
+      attractions.appendChild(li);
+    });
+
+    hotelsRestaurants.innerHTML = `
+      <p class="font-semibold text-accent">Hotels:</p>
+      <p class="text-light">${data.hotels.join(', ')}</p>
+      <p class="font-semibold text-accent mt-2">Restaurants:</p>
+      <p class="text-light">${data.restaurants.join(', ')}</p>
+    `;
+
+    budgetTips.textContent = data.budgetTips;
+    budgetTips.className = "text-secondary";
+    transportation.textContent = data.transportation;
+    transportation.className = "text-secondary";
+    travelerTips.textContent = data.travelerTips;
+    travelerTips.className = "text-secondary";
+
+    travelGuide.classList.add('visible');
+  }
+
+  function showLoading() {
+    destinationName.textContent = "Loading...";
+    bestTime.textContent = "Loading...";
+    attractions.innerHTML = "<li>Loading...</li>";
+    hotelsRestaurants.innerHTML = "Loading...";
+    budgetTips.textContent = transportation.textContent = travelerTips.textContent = "Loading...";
+  }
+
+  function showNotFound() {
+    destinationImage.style.backgroundImage =
+      "url('https://images.unsplash.com/photo-1584824486539-53bb4646bdbc?auto=format&fit=crop&w=1170&q=80')";
+    destinationName.textContent = "Destination Not Found";
+    bestTime.textContent = "N/A";
+    attractions.innerHTML = "<li>Try searching for another destination</li>";
+    hotelsRestaurants.innerHTML = "N/A";
+    budgetTips.textContent = "N/A";
+    transportation.textContent = "N/A";
+    travelerTips.textContent = "Please check spelling.";
+  }
+</script>
+
+</body>
+</html>
